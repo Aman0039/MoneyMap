@@ -13,7 +13,7 @@ import Expense from './pages/dashboard/Expense'
 
 const App = () => {
   return (
-    <div>
+    <div className='select-none'>
       <Router>
         <Routes>
           <Route path="/" element={<Root/>} />
