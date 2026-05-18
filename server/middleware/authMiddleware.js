@@ -2,8 +2,8 @@ const jwt = require("jsonwebtoken");
 
 const UserModel = require("../models/User");
 
-exports.protect = async (req, res, next) => {
-    let token = req.headers.authoriation?.split(" ")[1];
+const protect = async (req, res, next) => {
+    let token = req.headers.authorization?.split(" ")[1];
 
     if(!token) return res.status(401).json({message : "Not authorized , no token"});
 
@@ -15,3 +15,5 @@ exports.protect = async (req, res, next) => {
         res.status(401).json({message : "Not authorized token failed"});
     }
 }
+
+module.exports = protect;
