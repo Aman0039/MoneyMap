@@ -3,7 +3,7 @@ const ExpenseModel = require("../models/Expense");
 const { Types, isValidObjectId } = require("mongoose");
 
 //Dashboard Data
-exports.getDashboardData = async (req, res) => {
+const getDashboardData = async (req, res , next) => {
     try {
         const userId = req.user.id;
         const userObjectId = new Types.ObjectId(String(userId));
@@ -80,6 +80,8 @@ exports.getDashboardData = async (req, res) => {
             recentTransactions: lastTransactions,
         })
     } catch (error) {
-        res.status(500).json({ message: "Internal Server Error", error });
+        next(error);
     }
 }
+
+module.exports = getDashboardData;

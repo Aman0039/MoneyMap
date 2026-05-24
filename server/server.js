@@ -35,8 +35,15 @@ app.use("/api/v1/expense", expenseRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 
 //Serve uploads folder
-
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use((err, req, res, next) => {
+    console.error(err);
+
+    res.status(500).json({
+        message: err.message || "Internal Server Error",
+    });
+});
 
 const PORT = process.env.PORT || 5000;
 

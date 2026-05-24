@@ -8,7 +8,7 @@ const generateToken = (id) => {
 
 //Register User
 const registerUser = async (req, res) => {
-    // console.log(req.body);
+    console.log(req.body);
     const { fullName, email, password, profileImageUrl } = req.body;
 
     //Validation check for missing feilds
@@ -30,10 +30,8 @@ const registerUser = async (req, res) => {
             fullName,
             email,
             password,
-            profileImageUrl,
+            profileImageUrl
         });
-
-        console.log("User", user)
 
         res.status(201).json({
             id: user._id,
@@ -63,6 +61,7 @@ const loginUser = async (req, res) => {
         }
 
         res.status(200).json({
+            message: "User Logged In",
             id: user._id,
             user,
             token: generateToken(user._id),
@@ -87,9 +86,10 @@ const getUserInfo = async (req, res) => {
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({
-            message: "Inteenal Server Error"
+            message: "Internal Server Error"
         })
     }
 };
 
-module.exports = { loginUser, registerUser, getUserInfo }
+
+module.exports = { registerUser, loginUser, getUserInfo }

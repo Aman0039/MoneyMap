@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import AuthLayout from '../../components/layouts/AuthLayout'
 import { Link, useNavigate } from 'react-router-dom';
-import Input from '../../components/input/input';
+import Input from '../../components/input/Input';
 import { validateEmail } from '../../utils/helper';
 import ProfilePhotoSelector from '../../components/input/ProfilePhotoSelector';
+import axiosInstance from '../../utils/axiosinstance';
+import { useContext } from 'react';
+import { UserContext } from '../../context/useContext';
+import uploadImage from '../../utils/uploadImage';
+import { API_PATHS } from '../../utils/apiPaths';
 
 const SignUp = () => {
     const [profilePic, setProfilePic] = useState(null);
@@ -12,6 +17,8 @@ const SignUp = () => {
     const [password, setPassword] = useState("");
 
     const [error, setError] = useState(null);
+
+    const {updateUser} = useContext(UserContext);
 
     const navigate = useNavigate();
 
@@ -37,10 +44,43 @@ const SignUp = () => {
             return;
         }
 
-        setError("");
+        setError(null);
 
         // SignUp API call
+        try {
+            //upload Image if present
 
+            if(profilePic){
+                const imgUploadRes = await uploadImage(profilePic);
+
+                profileImageUrl = imgUploadRes.imageUrl || "";
+            }
+
+
+            const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER , {
+                fullName ,
+                email ,
+                password,
+                profileImageUrl
+            });
+
+            const { token , user} = response.data;
+
+            if(token) {
+                localStorage.setItem("token" , token);
+                updateUser(user);
+                navigate("/dashboard");
+            }
+
+
+        } catch (error) {
+            if(error.response && error.response.data.message){
+                setError(error.response.data.message);
+            }
+            else{
+                setError("Something went wrong. Please try again")
+            }
+        }
 
 
     }
@@ -48,7 +88,7 @@ const SignUp = () => {
         <AuthLayout>
             <div className="lg:w-[100%] h-auto md:h-full mt-10 md:mt-0 flex flex-col justify-center">
                 <h3 className="text-xl font-semibold text-black">Create an Account</h3>
-                <p className='text-xs text-slate-700 mt=[5px] mb-6'>
+                <p className='text-xs text-slate-700 mt-[5px] mb-6'>
                     Join us today by entering your details below.
                 </p>
 
@@ -58,7 +98,7 @@ const SignUp = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Input
-                            vlaue={fullName}
+                            value={fullName}
                             onChange={({ target }) => setFullName(target.value)}
                             label="FullName"
                             placeholder="Jhon"
